@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | F² Mines</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0612; --nav-bg: rgba(11, 6, 18, 0.9); --text: #ffffff;
+            --muted: #b3a9c9; --purple: #7c3aed; --purple-glow: #a855f7;
+            --accent: #f59e0b; --border: rgba(124, 58, 237, 0.2); --footer: #08040d;
+        }
+        body.light-mode {
+            --bg: white; --nav-bg: rgba(255, 255, 255, 0.95); --text: #0f172a;
+            --muted: #475569; --purple: #6d28d9; --purple-glow: #8b5cf6;
+            --border: #e2e8f0; --footer: #f1f5f9;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); overflow-x: hidden; transition: 0.3s ease; line-height: 1.7; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--nav-bg); backdrop-filter: blur(10px); position: sticky; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--border); }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 22px; text-decoration: none; color: inherit; }
+        .logo span { background: var(--accent); color: #000; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .nav-links { display: flex; list-style: none; gap: 30px; }
+        .nav-links a { text-decoration: none; color: var(--text); font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--purple); }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+        .theme-btn { background: none; border: 1px solid var(--border); color: var(--text); cursor: pointer; padding: 8px; border-radius: 50%; font-size: 18px; outline: none; }
+        .btn { padding: 10px 22px; border-radius: 99px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-block; }
+        .btn-primary { background: var(--purple); color: white; }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1100; }
+        .hamburger span { width: 25px; height: 3px; background: var(--text); border-radius: 2px; transition: 0.3s; }
+        .hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        .mobile-menu { position: fixed; top: 0; right: -100%; width: 300px; height: 100vh; background: var(--bg); border-left: 1px solid var(--border); z-index: 1050; display: flex; flex-direction: column; padding: 100px 40px; gap: 25px; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
+        .mobile-menu.active { right: 0; }
+        .mobile-menu a { text-decoration: none; color: var(--text); font-size: 22px; font-weight: 700; }
+        .legal-header { padding: 160px 5% 60px; background: linear-gradient(to bottom, rgba(124, 58, 237, 0.15), transparent); text-align: center; }
+        .legal-header h1 { font-size: clamp(30px, 5vw, 54px); font-weight: 900; }
+        .legal-header p { color: var(--purple-glow); font-weight: 700; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase; font-size: 14px; }
+        .legal-container { max-width: 850px; margin: 0 auto; padding: 40px 5% 100px; }
+        .legal-section { margin-bottom: 45px; opacity: 0; transform: translateY(20px); transition: 0.8s ease-out; }
+        .legal-section.active { opacity: 1; transform: translateY(0); }
+        .legal-section h2 { font-size: 22px; color: var(--text); margin-bottom: 15px; border-left: 4px solid var(--purple); padding-left: 15px; }
+        .legal-section p { color: var(--muted); margin-bottom: 15px; font-size: 16px; }
+        .legal-section ul { padding-left: 20px; color: var(--muted); margin-bottom: 15px; }
+        .legal-section ul li { margin-bottom: 10px; }
+        footer { background: var(--footer); padding: 60px 5% 30px; border-top: 1px solid var(--border); }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .footer-links { display: flex; gap: 25px; list-style: none; flex-wrap: wrap; }
+        .footer-links a { text-decoration: none; color: var(--muted); font-size: 14px; transition: 0.3s; font-weight: 500; }
+        .footer-links a:hover { color: var(--purple); }
+        .copy-text { color: var(--muted); font-size: 13px; text-align: center; margin-top: 30px; opacity: 0.7; border-top: 1px solid var(--border); padding-top: 20px;}
+        @media (max-width: 992px) {
+            .nav-links, .nav-right .btn-primary { display: none; }
+            .hamburger { display: flex; }
+            .footer-content { flex-direction: column; text-align: center; }
+            .footer-links { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo"><span>₿</span> F² MINES</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#invest">Investment</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+        <div class="nav-right">
+            <button class="theme-btn" id="themeToggle">🌙</button>
+            <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html">Home</a>
+        <a href="index.html#invest">Investment</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 10px 0;">
+        <a href="signup.html" class="btn btn-primary" style="text-align: center;">Sign Up Free</a>
+    </div>
+
+    <header class="legal-header">
+        <p>Your Data Matters</p>
+        <h1>Privacy Policy</h1>
+    </header>
+
+    <div class="legal-container">
+        <section class="legal-section reveal">
+            <p style="font-style: italic; color: var(--purple-glow);"><strong>Effective Date:</strong> January 1, 2025</p>
+            <p>At F² Mines, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect your data when you use our website, services, and applications.</p>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>1. Information We Collect</h2>
+            <p>We may collect the following types of information:</p>
+            <ul>
+                <li><strong>Personal Information:</strong> Name, email address, phone number, and account details provided during registration.</li>
+                <li><strong>Financial & Account Information:</strong> Payment-related details such as withdrawal account information (e.g., JazzCash, Easypaisa, Binance wallet addresses).</li>
+                <li><strong>Usage Data:</strong> Pages visited, time spent on the website, IP address, device type, and browser information.</li>
+                <li><strong>Mining Activity:</strong> Information related to your mining sessions, hashrate, and earnings tracked on our platform.</li>
+            </ul>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>2. How We Use Your Information</h2>
+            <ul>
+                <li>Create and manage user accounts.</li>
+                <li>Process withdrawals, deposits, and account updates.</li>
+                <li>Track mining activity and calculate earnings.</li>
+                <li>Improve website performance and user experience.</li>
+                <li>Prevent fraud and unauthorized access.</li>
+            </ul>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>3. Data Protection & Security</h2>
+            <p>We implement strong security measures including secure authentication systems, encrypted data transmission using HTTPS, access control monitoring, and database security. However, no online system is 100% secure.</p>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>4. Data Sharing</h2>
+            <p>We do not sell, rent, or trade your personal information. Data may only be shared when required by law or to protect our legal rights and prevent fraud.</p>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>5. Cookies & Tracking</h2>
+            <p>We use cookies to improve functionality, remember preferences, and analyze site traffic. You can disable cookies through your browser settings.</p>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>6. Your Rights</h2>
+            <ul>
+                <li>Access your personal data</li>
+                <li>Update or correct your information</li>
+                <li>Request account deletion</li>
+                <li>Control communication preferences</li>
+            </ul>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>7. Data Retention</h2>
+            <p>We retain your information as long as necessary to provide services and comply with legal obligations.</p>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>8. Third-Party Links</h2>
+            <p>Our website may contain links to third-party platforms. We are not responsible for their privacy practices.</p>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>9. Children's Privacy</h2>
+            <p>Our services are not intended for individuals under 18. We do not knowingly collect information from children.</p>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>10. Policy Updates</h2>
+            <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.</p>
+        </section>
+
+        <section class="legal-section reveal">
+            <h2>11. Contact Us</h2>
+            <p>For questions about this Privacy Policy:</p>
+            <ul>
+                <li><strong>Email:</strong> support@f2mines.com</li>
+                <li><strong>Website:</strong> F² Mines Cloud Mining Platform</li>
+            </ul>
+        </section>
+
+        <section class="legal-section reveal" style="background: rgba(124, 58, 237, 0.05); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+            <p style="font-weight: 700; color: var(--purple-glow);">By using F² Mines services, you acknowledge that you have read, understood, and agree to this Privacy Policy.</p>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <a href="index.html" class="logo" style="font-size: 18px;"><span>₿</span> F² MINES</a>
+            <ul class="footer-links">
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="disclaimer.html">Disclaimer</a></li>
+                <li><a href="privacy.html">Privacy Policy</a></li>
+                <li><a href="terms.html">Terms & Conditions</a></li>
+            </ul>
+        </div>
+        <div class="copy-text">© 2025 F² Mines Global Inc. All rights reserved.</div>
+    </footer>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            themeToggle.innerHTML = isLight ? '☀️' : '🌙';
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            themeToggle.innerHTML = '☀️';
+        }
+
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, observerOptions);
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

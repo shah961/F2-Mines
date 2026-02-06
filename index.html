@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>F² Mines | Future Finance</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+/* --- DYNAMIC THEME VARIABLES --- */
+:root {
+  --bg: #0b0612;
+  --nav-bg: rgba(11, 6, 18, 0.8);
+  --card: linear-gradient(180deg,#1b0f2f,#0e0619);
+  --text: #ffffff;
+  --muted: #b3a9c9;
+  --purple: #7c3aed;
+  --purple-glow: #a855f7;
+  --accent: #f59e0b;
+  --border: #2a1745;
+  --hero-overlay: rgba(11, 6, 18, 0.9);
+  --footer-bg: #08040d;
+}
+
+body.light-mode {
+  --bg: white;
+  --nav-bg: rgba(255, 255, 255, 0.9);
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --purple: #6d28d9;
+  --purple-glow: #8b5cf6;
+  --border: #e2e8f0;
+  --hero-overlay: rgba(248, 250, 252, 0.85);
+  --footer-bg: #f1f5f9;
+}
+
+* {
+    margin:0; padding:0; box-sizing:border-box; 
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+html { scroll-behavior: smooth; }
+body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+
+/* --- NAVBAR --- */
+nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 5%; border-bottom: 1px solid var(--border);
+  background: var(--nav-bg); backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 1000;
+}
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 22px; cursor: pointer; }
+.logo span {
+  background: var(--accent); color: #000; width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; box-shadow: 0 0 15px var(--accent);
+}
+.nav-links { display: flex; list-style: none; gap: 28px; }
+.nav-links a { text-decoration: none; color: var(--text); font-weight: 500; transition: 0.3s; }
+.nav-links a:hover { color: var(--purple); }
+
+.nav-right { display: flex; align-items: center; gap: 15px; }
+.theme-toggle {
+    background: none; border: 1px solid var(--border);
+    color: var(--text); padding: 8px; border-radius: 50%;
+    cursor: pointer; font-size: 18px;
+}
+.nav-btn {
+  padding: 10px 22px; border-radius: 999px; border: 1px solid var(--purple);
+  background: transparent; color: var(--text); cursor: pointer; font-weight: 600; text-decoration: none;
+  display: inline-block;
+}
+.nav-btn.primary { background: linear-gradient(135deg, var(--purple), var(--purple-glow)); border: none; color: #fff; }
+
+/* HAMBURGER & MOBILE MENU */
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1100; }
+.hamburger span { display: block; width: 25px; height: 3px; background: var(--text); border-radius: 3px; transition: 0.3s; }
+.hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+.mobile-menu {
+    position: fixed; top: 0; right: -100%; width: 75%; height: 100vh;
+    background: var(--bg); border-left: 1px solid var(--border);
+    z-index: 1050; display: flex; flex-direction: column;
+    padding: 100px 40px; gap: 25px; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.mobile-menu.active { right: 0; }
+.mobile-menu a { text-decoration: none; color: var(--text); font-size: 20px; font-weight: 700; }
+
+/* --- HERO --- */
+.hero {
+  padding: 100px 5%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px;
+  align-items: center; min-height: 70vh;
+  background: linear-gradient(var(--hero-overlay), var(--hero-overlay)), 
+              url('https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=2000&auto=format&fit=crop');
+  background-size: cover; background-position: center;
+}
+.hero h1 { font-size: clamp(32px, 5vw, 56px); line-height: 1.1; font-weight: 900; }
+.hero p { margin-top: 20px; color: var(--muted); font-size: 18px; line-height: 1.6; }
+
+/* --- PURE CSS GOLD BITCOIN COIN --- */
+.hero-img, .visual-card {
+    width: 280px;
+    height: 280px;
+    background: linear-gradient(135deg, #ffd700 0%, #f59e0b 50%, #b8860b 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 8px solid #d4af37;
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.5), 
+        inset 0 0 20px rgba(255,255,255,0.5);
+    animation: float 4s ease-in-out infinite;
+    margin: 20px auto;
+}
+
+.css-bitcoin {
+    font-size: 160px;
+    font-weight: 900;
+    color: #ffffff;
+    transform: rotate(14deg);
+    text-shadow: 
+        2px 2px 0px rgba(0,0,0,0.2),
+        -1px -1px 0px rgba(255,255,255,0.3);
+    user-select: none;
+}
+
+.hero-img::before {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 2px dashed rgba(255,255,255,0.3);
+}
+
+.logo span {
+    background: #f59e0b;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    flex-shrink: 0;
+}
+
+.logo-b {
+    color: #000;
+    font-weight: 900;
+    font-size: 20px;
+    transform: rotate(14deg);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* --- SECTIONS --- */
+.ticker { background: #000; padding: 15px; color: var(--purple-glow); overflow: hidden; white-space: nowrap; font-family: monospace; }
+.ticker-content { display: inline-block; animation: scroll 25s linear infinite; }
+
+.section { padding: 80px 5%; }
+.section-title { text-align: center; margin-bottom: 50px; font-size: 32px; font-weight: 900; }
+
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+.card {
+  background: var(--card); padding: 40px; border-radius: 24px;
+  border: 1px solid var(--border); text-align: center; position: relative;
+  transition: transform 0.3s ease;
+}
+.card:hover { transform: translateY(-10px); }
+
+/* TRUST CARDS (FEATURES) */
+.trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.trust-card {
+    background: rgba(124, 58, 237, 0.05); padding: 30px; border-radius: 20px;
+    border: 1px solid var(--border); text-align: center;
+}
+.trust-card h4 { margin: 15px 0 10px; color: var(--purple-glow); }
+.trust-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.icon-box { font-size: 30px; }
+
+/* --- FOOTER --- */
+footer { background: var(--footer-bg); padding: 80px 5% 40px; border-top: 1px solid var(--border); }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 50px; }
+.footer-brand p { margin-top: 15px; color: var(--muted); max-width: 300px; line-height: 1.6; }
+.footer-links h4 { margin-bottom: 20px; font-weight: 700; }
+.footer-links ul { list-style: none; }
+.footer-links ul li { margin-bottom: 12px; }
+.footer-links ul li a { text-decoration: none; color: var(--muted); transition: 0.3s; }
+.footer-links ul li a:hover { color: var(--purple); padding-left: 5px; }
+.copy { text-align: center; padding-top: 30px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+
+/* ANIMATIONS */
+@keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+.reveal { opacity: 0; transform: translateY(30px); transition: 0.8s ease-out; }
+.reveal.active { opacity: 1; transform: translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .nav-links, .nav-right .nav-btn { display: none; }
+    .hamburger { display: flex; }
+    .hero { grid-template-columns: 1fr; text-align: center; padding-top: 60px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; text-align: center; }
+    .footer-brand { display: flex; flex-direction: column; align-items: center; }
+}
+
+/* Currency Selector Styling */
+.currency-selector-wrap {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+#currency-select {
+    background: var(--card);
+    color: var(--text);
+    border: 2px solid var(--purple);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+}
+
+/* Grid for 4 Cards */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.plan-price-val {
+    font-size: 36px;
+    font-weight: 900;
+    margin: 15px 0;
+}
+
+/* Mobile par 2x2 Square Cards */
+@media (max-width: 992px) {
+    .cards-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .card {
+        aspect-ratio: 1 / 1;
+        display: flex;
+        width:165px;
+        height:200px;
+        flex-direction: column;
+        justify-content: center;
+        padding: 15px;
+    }
+    .plan-price-val { font-size: 22px; }
+    .card h3 { font-size: 13px; }
+    .card p { font-size: 10px; margin: 2px 0; }
+    .card button { padding: 8px; font-size: 9px; margin-top: 10px; }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo"><span>₿</span> F² MINES</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="#invest">Investment</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-toggle" id="theme-btn">🌙</button>
+    <a href="login.html" class="nav-btn">Log In</a>
+    <a href="signup.html" class="nav-btn primary">Sign Up</a>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="#invest">Investment</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <hr style="border:none; border-top:1px solid var(--border); margin: 10px 0;">
+    <a href="login.html" class="nav-btn" style="text-align: center; margin-bottom: 10px;">Log In</a>
+    <a href="signup.html" class="nav-btn primary" style="text-align: center;">Sign Up Free</a>
+</div>
+
+<section class="hero">
+  <div class="reveal active">
+    <div style="color:var(--purple-glow); font-size:12px; letter-spacing:2px; margin-bottom:15px;">● CLOUD MINING INFRASTRUCTURE</div>
+    <h1>THE SMARTEST WAY<br/>TO MINE CRYPTO</h1>
+    <p>Maximize your returns with our institutional-grade mining hardware. No technical knowledge required. Start earning within 24 hours.</p>
+    <a href="signup.html" class="nav-btn primary" style="margin-top: 30px; padding: 15px 35px; border-radius: 999px;">Start Mining Now</a>
+  </div>
+  <div class="hero-img">
+    <span class="css-bitcoin">₿</span>
+  </div>
+</section>
+  
+<div class="ticker">
+  <div class="ticker-content">
+    BTC: +2.5% ($68,500) &nbsp;&nbsp;•&nbsp;&nbsp; ETH: -1.2% ($3,400) &nbsp;&nbsp;•&nbsp;&nbsp; DOGE: +5.1% &nbsp;&nbsp;•&nbsp;&nbsp; F² TOKEN: +12.4% &nbsp;&nbsp;•&nbsp;&nbsp; SOL: +3.8% &nbsp;&nbsp;•&nbsp;&nbsp; DOT: -0.5%
+  </div>
+</div>
+
+<!-- INVESTMENT PLANS -->
+<section class="section" id="invest">
+  <h2 class="section-title reveal">TOP INVESTMENT PLANS</h2>
+
+  <!-- Currency Selector -->
+  <div class="currency-selector-wrap reveal">
+      <select id="currency-select">
+          <option value="USD" data-symbol="$" data-rate="1">US Dollar (USD)</option>
+          <option value="EUR" data-symbol="€" data-rate="0.92">Euro (EUR)</option>
+          <option value="JPY" data-symbol="¥" data-rate="150.50">Japanese Yen (JPY)</option>
+          <option value="GBP" data-symbol="£" data-rate="0.79">British Pound (GBP)</option>
+          <option value="CNY" data-symbol="¥" data-rate="7.19">Chinese Yuan (CNY)</option>
+          <option value="INR" data-symbol="₹" data-rate="83.30">Indian Rupee (INR)</option>
+          <option value="AUD" data-symbol="A$" data-rate="1.52">Australian Dollar (AUD)</option>
+          <option value="CAD" data-symbol="C$" data-rate="1.35">Canadian Dollar (CAD)</option>
+          <option value="CHF" data-symbol="CHF" data-rate="0.88">Swiss Franc (CHF)</option>
+          <option value="RUB" data-symbol="₽" data-rate="92.50">Russian Ruble (RUB)</option>
+          <option value="KRW" data-symbol="₩" data-rate="1335.00">South Korean Won (KRW)</option>
+          <option value="BRL" data-symbol="R$" data-rate="4.97">Brazilian Real (BRL)</option>
+          <option value="ZAR" data-symbol="R" data-rate="19.10">South African Rand (ZAR)</option>
+          <option value="MXN" data-symbol="$" data-rate="17.05">Mexican Peso (MXN)</option>
+          <option value="TRY" data-symbol="₺" data-rate="31.10">Turkish Lira (TRY)</option>
+          <option value="SAR" data-symbol="﷼" data-rate="3.75">Saudi Riyal (SAR)</option>
+          <option value="IDR" data-symbol="Rp" data-rate="15600.00">Indonesian Rupiah (IDR)</option>
+          <option value="SGD" data-symbol="S$" data-rate="1.34">Singapore Dollar (SGD)</option>
+          <option value="AED" data-symbol="د.إ" data-rate="3.67">UAE Dirham (AED)</option>
+          <option value="PKR" data-symbol="Rs" data-rate="278.50">Pakistani Rupee (PKR)</option>
+      </select>
+  </div>
+
+  <div class="cards-grid">
+    <div class="card reveal">
+      <h3>GROWTH PLAN</h3>
+      <div class="plan-price-val" data-usd="25">$25</div>
+      <p>Weekly ROI: 0.75%</p>
+      <p style="color:var(--muted); font-size: 10px; margin-top: 5px;">Contract: Selected Coin (0.12BTC, 20SOL, 100Sui, 100M PEPE)</p>
+      <button class="nav-btn primary" style="width:100%">LEARN MORE</button>
+    </div>
+    <div class="card reveal">
+      <h3>SILVER PLAN</h3>
+      <div class="plan-price-val" data-usd="122">$122</div>
+      <p>Weekly ROI: 1.5%</p>
+      <p style="color:var(--muted); font-size: 10px; margin-top: 5px;">Contract: Selected Coin (0.12BTC, 20SOL, 100Sui, 100M PEPE)</p>
+      <button class="nav-btn primary" style="width:100%">LEARN MORE</button>
+    </div>
+
+    <div class="card reveal">
+      <h3>GOLD PLAN</h3>
+      <div class="plan-price-val" data-usd="530">$530</div>
+      <p>Weekly ROI: 1.8%</p>
+      <p style="color:var(--muted); font-size: 10px; margin-top: 5px;">Contract: Selected Coin (0.12BTC, 20SOL, 100Sui, 100M PEPE)</p>
+      <button class="nav-btn primary" style="width:100%">LEARN MORE</button>
+    </div>
+
+    <div class="card reveal">
+      <h3>PRO PLAN</h3>
+      <div class="plan-price-val" data-usd="2560">$2560</div>
+      <p>Weekly ROI: 2%</p>
+      <p style="color:var(--muted); font-size: 10px; margin-top: 5px;">Contract: Selected Coin (0.12BTC, 20SOL, 100Sui, 100M PEPE)</p>
+      <button class="nav-btn primary" style="width:100%">LEARN MORE</button>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST CARDS / FEATURES -->
+<section class="section" style="background: rgba(124, 58, 237, 0.02);">
+  <h2 class="section-title reveal">WHY INVEST WITH US?</h2>
+  <div class="trust-grid">
+    <div class="trust-card reveal">
+      <div class="icon-box">🛡️</div>
+      <h4>Maximum Security</h4>
+      <p>Your funds are protected by multi-signature cold storage and advanced DDoS protection.</p>
+    </div>
+    <div class="trust-card reveal">
+      <div class="icon-box">⚡</div>
+      <h4>Instant Payouts</h4>
+      <p>Withdraw your earnings daily directly to your wallet with zero hidden fees.</p>
+    </div>
+    <div class="trust-card reveal">
+      <div class="icon-box">📊</div>
+      <h4>Real-time Stats</h4>
+      <p>Monitor your hash rate and earnings in real-time through our intuitive dashboard.</p>
+    </div>
+    <div class="trust-card reveal">
+      <div class="icon-box">🌍</div>
+      <h4>Global Reach</h4>
+      <p>Mining farms located in 3 continents powered by 100% renewable energy.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid reveal">
+    <div class="footer-brand">
+      <div class="logo"><span>₿</span> F² MINES</div>
+      <p>The world's leading cloud mining platform, providing accessible crypto rewards to over 500,000 users worldwide.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="signup.html">Sign Up</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="terms.html">Terms & Conditions</a></li>
+        <li><a href="disclaimer.html">Disclaimer</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="copy">
+    © 2025 F² Mines Cloud Mining Solutions. All rights reserved.
+  </div>
+</footer>
+<script type="module">
+    // 1. Firebase Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // 2. Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAiVujpar4bp-eCGZTEaCu6VKwhsJG7J3I",
+        authDomain: "f2mines1.firebaseapp.com",
+        databaseURL: "https://f2mines1-default-rtdb.firebaseio.com",
+        projectId: "f2mines1",
+        storageBucket: "f2mines1.firebasestorage.app",
+        messagingSenderId: "546591819609",
+        appId: "1:546591819609:web:97e8009b59fc3cdf44ee48"
+    };
+
+    // 3. Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // 4. Load Live Content from Admin Panel
+    onValue(ref(db, 'siteContent'), (snapshot) => {
+        const content = snapshot.val();
+        if (content) {
+            // Hero Title Update
+            if (content.hero_title) {
+                document.querySelector('.hero h1').innerHTML = content.hero_title.replace(/\n/g, '<br>');
+            }
+            // Hero Description Update
+            if (content.hero_desc) {
+                document.querySelector('.hero p').innerText = content.hero_desc;
+            }
+        }
+    });
+
+    // 5. Mobile Menu Logic (Open/Close Fix)
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+    });
+
+    // Link dabane par menu band karna
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        });
+    });
+
+    // Bahar click karne par menu band karna
+    document.addEventListener('click', (e) => {
+        if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        }
+    });
+
+    // 6. Theme Switcher (Dark/Light Mode)
+    const themeBtn = document.getElementById('theme-btn');
+    const body = document.body;
+    
+    themeBtn.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        const isLight = body.classList.contains('light-mode');
+        themeBtn.innerText = isLight ? '☀️' : '🌙';
+        localStorage.setItem('f2_theme', isLight ? 'light' : 'dark');
+    });
+
+    if (localStorage.getItem('f2_theme') === 'light') {
+        body.classList.add('light-mode');
+        themeBtn.innerText = '☀️';
+    }
+
+    // 7. Currency Selector Logic
+    const currSelect = document.getElementById('currency-select');
+    const prices = document.querySelectorAll('.plan-price-val');
+    
+    currSelect.addEventListener('change', function() {
+        const opt = this.options[this.selectedIndex];
+        const rate = parseFloat(opt.getAttribute('data-rate'));
+        const symbol = opt.getAttribute('data-symbol');
+        prices.forEach(p => {
+            const usdValue = parseFloat(p.getAttribute('data-usd'));
+            const converted = (usdValue * rate).toLocaleString(undefined, {
+                minimumFractionDigits: 0, maximumFractionDigits: 0
+            });
+            p.innerText = `${symbol}${converted}`;
+        });
+    });
+
+    // 8. Scroll Reveal Animation
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('active');
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+</script>
+</body>
+</html>
