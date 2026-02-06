@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Dashboard | F² Mines</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+    /* --- 1. THEME & CORE VARIABLES --- */
+    :root {
+        --bg: #050109; --nav: #0b0612; --card: #11081a; --text: #ffffff;
+        --muted: #b3a9c9; --purple: #7c3aed; --purple-glow: #a855f7;
+        --border: rgba(124, 58, 237, 0.2); --success: #10b981; --danger: #ef4444; --accent: #f59e0b;
+    }
+
+    /* LIGHT MODE: STRICT PURE WHITE BACKGROUND */
+    body.light-mode {
+        --bg: #ffffff !important; 
+        --nav: #f8f9fa; 
+        --card: #f1f5f9;
+        --text: #050109; 
+        --muted: #64748b; 
+        --border: #e2e8f0; 
+        --purple: #6d28d9;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: 0.2s; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 110px; overflow-x: hidden; }
+    
+    /* NAVIGATION */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--nav); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    #themeToggle { background: none; border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 18px; cursor: pointer; text-decoration: none; color: inherit; }
+    .logo span { background: var(--accent); color: #000; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transform: rotate(14deg); font-weight: 900; }
+    .u-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--purple); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 2px solid var(--border); font-size: 12px; }
+
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 4%; }
+    
+    /* VIEW MANAGEMENT */
+    .view-section { display: none; }
+    .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+
+    /* DASHBOARD CARDS (Square Logic for Mobile) */
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; }
+    .balance-card { grid-column: span 2; background: linear-gradient(135deg, var(--purple), #4c1d95); padding: 25px; border-radius: 20px; color: #fff !important; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .balance-card h3 { color: rgba(255,255,255,0.8); font-size: 12px; margin-bottom: 5px; }
+    .balance-card .val { font-size: 32px; font-weight: 900; margin: 5px 0; color: #fff; }
+    
+    .card-square { aspect-ratio: 1/1; background: var(--card); border: 1px solid var(--border); border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 10px; overflow: hidden; }
+    .card-square h3 { font-size: 10px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; }
+
+    /* MARKET CARD LIST */
+    .market-list { width: 100%; display: flex; flex-direction: column; gap: 4px; }
+    .m-row { display: flex; justify-content: space-between; font-size: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 2px 0; }
+    .m-row span:last-child { color: var(--success); font-weight: 700; }
+
+    /* MINING ENGINE UI (Perfectly Circular) */
+    .mining-wrap { display: flex; flex-direction: column; align-items: center; margin: 40px 0; }
+    .ring-box { position: relative; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; }
+    .progress-ring { transform: rotate(-90deg); position: absolute; pointer-events: none; z-index: 5; }
+    .progress-ring__circle { stroke-dasharray: 565.48; stroke-dashoffset: 565.48; stroke: var(--purple); stroke-linecap: round; transition: stroke-dashoffset 0.5s linear, stroke 0.5s ease; }
+    
+    .btn-mine { 
+        width: 155px; height: 155px; border-radius: 50%; border: none; 
+        background: linear-gradient(135deg, var(--purple), var(--purple-glow)); 
+        color: #fff; font-weight: 900; font-size: 11px; cursor: pointer; z-index: 10; 
+        display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        line-height: 1.4; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; padding: 15px;
+    }
+    .btn-mine:active { transform: scale(0.95); }
+
+    /* MODALS & FORMS */
+    .modal { 
+        position: fixed; 
+        inset: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0,0,0,0.95); 
+        display: none; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 9999; 
+        padding: 20px; 
+        backdrop-filter: blur(10px); 
+    }
+
+    .modal-content { 
+        background: var(--card); 
+        border: 1px solid var(--border); 
+        padding: 30px 20px; 
+        border-radius: 28px; 
+        width: 100%; 
+        max-width: 400px; 
+        min-height: 200px; 
+        max-height: 85vh; 
+        overflow-y: auto; 
+        text-align: center; 
+        position: relative;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes modalPop {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .method-btn { 
+        background: rgba(255,255,255,0.05); 
+        border: 1px solid var(--border); 
+        padding: 16px; 
+        border-radius: 16px; 
+        margin-bottom: 12px; 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between;
+        gap: 15px; 
+        width: 100%; 
+        color: var(--text);
+        font-weight: 700; 
+        font-size: 15px;
+        text-align: left;
+    }
+    .method-btn:hover { background: rgba(255,255,255,0.1); }
+    
+    .form-group { width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 10px; outline: none; margin-bottom: 10px; font-size: 14px; }
+    .card-panel { background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 20px; }
+
+    /* TRANSACTION LISTS */
+    .item-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+    .btn-cancel { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+    .btn-cancel:hover { background: var(--danger); color: #fff; }
+
+    /* ACTION BAR (FIXED BOTTOM) */
+    .action-bar { position: fixed; bottom: 0; width: 100%; background: var(--nav); display: flex; padding: 15px; border-top: 1px solid var(--border); gap: 10px; z-index: 1000; }
+    .btn-act { flex: 1; padding: 15px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; background: var(--card); color: var(--text); }
+    .btn-act:hover { opacity: 0.8; }
+
+    .pulse { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse-anim 2s infinite; }
+    
+    @keyframes pulse-anim { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body class="dark-mode">
+
+    <!-- 1. TOP NAVIGATION -->
+    <nav>
+        <div class="logo" onclick="switchView('dashboardView')">
+            <span><b>₿</b></span> F² MINES
+        </div>
+        <div class="nav-right">
+            <button id="themeToggle" title="Toggle Mode">🌙</button>
+            <div class="u-avatar" id="navAvatar" onclick="switchView('profileView')">US</div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- 2. VIEW: DASHBOARD (HOME) -->
+        <div id="dashboardView" class="view-section active">
+            <div class="stats-grid">
+                <!-- Balance Card -->
+                <div class="card balance-card">
+                    <h3>Total Account Balance</h3>
+                    <div class="val" id="dispBal">$0.00</div>
+                    <div id="dispHash" style="font-size:11px; font-weight:700;">Hashrate: 0.0 TH/s</div>
+                </div>
+                
+                <!-- Market Card (Coins List) -->
+                <div class="card-square">
+                    <h3>Market</h3>
+                    <div class="market-list">
+                        <div class="m-row"><span>BTC</span><span>$68,240</span></div>
+                        <div class="m-row"><span>SOL</span><span>$145.10</span></div>
+                        <div class="m-row"><span>SUI</span><span>$2.14</span></div>
+                        <div class="m-row"><span>PEPE</span><span>$0.009</span></div>
+                    </div>
+                </div>
+
+                <!-- Mining Status Card -->
+                <div class="card-square">
+                    <h3>Mining Status</h3>
+                    <div id="statLabel" style="font-weight:800; font-size:14px; color:var(--muted);">INACTIVE</div>
+                </div>
+
+                <!-- Progress Card -->
+                <div class="card-square">
+                    <h3>Total Progress</h3>
+                    <div id="percLabel" style="font-weight:900; font-size:18px;">0%</div>
+                </div>
+            </div>
+             
+    
+            <!-- Dashboard.html mein jahan Share & Earn wala card hai -->
+<div class="card" style="grid-column: span 2; margin-top: 15px; background: var(--card);">
+    <h3 style="font-size:12px; color:var(--muted)">SHARE & EARN</h3>
+    
+    <!-- YE LINE ADD KAREIN: Admin details yahan dikhengi -->
+    <p id="refRulesText" style="font-size: 11px; color: var(--accent); margin-bottom: 10px; font-weight: 700; background: rgba(245, 158, 11, 0.1); padding: 5px; border-radius: 5px; display: inline-block;">
+        Loading rewards details...
+    </p>
+
+    <div style="display: flex; gap: 10px; margin-top: 5px;">
+        <input type="text" id="refLink" readonly style="background:var(--bg); border:1px solid var(--border); color:var(--text); padding:10px; border-radius:8px; flex:1; font-size:11px;">
+        <button onclick="copyRef()" style="background:var(--purple); color:white; border:none; padding:10px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">Copy</button>
+    </div>
+    <div style="margin-top:10px; font-size:12px;">Total Referrals: <b id="refCount">0</b></div>
+   <div id="myReferralsList" style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
+    <h4 style="font-size:11px; color:var(--purple-glow); margin-bottom:10px;">MY INVITED FRIENDS</h4>
+    <div id="friendsListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:150px; overflow-y:auto;">
+        <!-- Friends names yahan aayenge -->
+    </div>
+</div>
+</div>
+
+            <!-- Mining Engine -->
+            <div class="mining-wrap">
+                <div class="ring-box">
+                    <svg class="progress-ring" width="220" height="220">
+                        <circle class="progress-ring__circle" stroke-width="12" fill="transparent" r="90" cx="110" cy="110"/>
+                    </svg>
+                    <button class="btn-mine" id="mainMineBtn" onclick="handleMiningAction()">
+                        <span id="miningRatioLabel">START<br>MINING</span>
+                    </button>
+                </div>
+                <div id="timerContainer" style="text-align:center; display:none; margin-top:15px;">
+                    <div id="timerText" style="font-size:26px; font-weight:900; color:var(--purple-glow);">00:00:00</div>
+                    <small style="color:var(--muted)">Mining Cycle: 48 Hours (Stops every 12h)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. VIEW: ACTIVITY HISTORY -->
+        <div id="historyView" class="view-section">
+            <h2 style="margin-bottom:20px;">Activity Log</h2>
+            <div id="txnList"></div>
+        </div>
+
+        <!-- 4. VIEW: PROFILE -->
+        <div id="profileView" class="view-section">
+            <div class="card-panel">
+                <h2>Account Settings</h2>
+                <div style="margin-top:20px;">
+                    <label style="font-size:11px; color:var(--muted)">Full Name</label>
+                    <input type="text" id="profName" class="form-group">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="font-size:11px; color:var(--muted)">Phone Number</label>
+                    <input type="text" id="profPhone" class="form-group">
+                </div>
+                <button class="btn-act" style="background:var(--purple); color:#fff; width:100%" onclick="saveProfile()">Save Changes</button>
+                <button class="btn-act" style="background:none; border:1px solid var(--danger); color:var(--danger); width:100%; margin-top:10px;" onclick="logout()">LOGOUT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DEPOSIT -->
+    <div id="depModal" class="modal">
+        <div class="modal-content">
+            <h2 id="depModalTitle" style="margin-bottom: 20px;">Deposit Funds</h2>
+            
+            <!-- Selection Step -->
+            <div id="depSelection">
+                <button class="method-btn" onclick="openDepStep2('JazzCash')">
+                    <span>📱 JazzCash</span>
+                </button>
+                <button class="method-btn" onclick="openDepStep2('EasyPaisa')">
+                    <span>📱 EasyPaisa</span>
+                </button>
+                <button class="method-btn" onclick="openDepForm('Binance')">
+                    <span>🔶 Binance (USDT)</span>
+                </button>
+            </div>
+
+            <!-- Plan Step -->
+            <div id="depPlanSelection" style="display:none">
+                <h3 style="margin-bottom:15px; font-size:16px;">Select Mining Plan</h3>
+                <button class="method-btn" onclick="openDepFinal('Growth', 25)">
+                    <span>Growth ($25)</span>
+                </button>
+                <button class="method-btn" onclick="openDepFinal('Silver', 122)">
+                    <span>Silver ($122)</span>
+                </button>
+                <button class="method-btn" onclick="openDepFinal('Gold', 530)">
+                    <span>Gold ($530)</span>
+                </button>
+                <button class="method-btn" onclick="openDepFinal('Pro', 2560)">
+                    <span>Pro ($2560)</span>
+                </button>
+            </div>
+
+            <!-- Final Step -->
+            <div id="depFinalForm" style="display:none">
+                <div id="adminBankDetails" style="font-size:13px; background:rgba(245,158,11,0.1); padding:15px; border-radius:15px; margin-bottom:15px; color:var(--accent); line-height:1.6; text-align:left;"></div>
+                <input type="text" id="inProof" placeholder="Transaction TID / Sender Name" class="form-group" style="width:100%;">
+                <input type="text" id="inBinanceID" placeholder="Your Binance ID / Pay ID" class="form-group" style="display:none; width:100%;">
+                <input type="number" id="inAmt" placeholder="Confirm Amount ($)" class="form-group" style="width:100%;">
+                <button class="btn-act" style="background:var(--purple); color:#fff; width:100%" onclick="submitDeposit()">Submit Deposit</button>
+                  <button class="btn-act" style="background:#25D366; color:#fff; width:100%; margin-top:10px;" onclick="sendWhatsAppProof()">
+                           🟢 Chat with Admin & Send Proof
+                   </button>
+            </div>
+
+            <button onclick="closeModals()" style="background:none; border:none; color:var(--muted); width:100%; margin-top:20px; font-weight:600; cursor:pointer;">Close</button>
+        </div>
+    </div>
+
+    <!-- MODAL: WITHDRAW -->
+    <div id="withModal" class="modal">
+        <div class="modal-content">
+            <h2>Withdraw Funds</h2>
+            <!-- Step 1: Selection -->
+            <div id="withSelection">
+                <button class="method-btn" onclick="openWithForm('JazzCash')">
+                    <span>📱 JazzCash</span>
+                </button>
+                <button class="method-btn" onclick="openWithForm('EasyPaisa')">
+                    <span>📱 EasyPaisa</span>
+                </button>
+                <button class="method-btn" onclick="openWithForm('Binance')">
+                    <span>🔶 Binance / Crypto</span>
+                </button>
+            </div>
+            <!-- Step 2: Form -->
+            <div id="withFinalForm" style="display:none">
+                <h3 id="withLabelTitle" style="color:var(--purple-glow); margin-bottom:15px; font-size:14px;"></h3>
+                
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="wAmt" placeholder="Amount" style="flex:2;" class="form-group">
+                    <select id="wCurr" style="flex:1;" class="form-group">
+                        <option>USD</option>
+                        <option>PKR</option>
+                    </select>
+                </div>
+
+                <!-- JAZZCASH / EASYPAISA INPUTS -->
+                <div id="localWithGroup">
+                    <input type="text" id="wLocalID" placeholder="Account Number / TILL ID" class="form-group">
+                </div>
+
+                <!-- BINANCE / CRYPTO INPUTS -->
+                <div id="binanceWithGroup" style="display:none">
+                    <input type="text" id="wBinID" placeholder="Binance ID" class="form-group">
+                    <input type="text" id="wBtc" placeholder="BTC Wallet Address" class="form-group">
+                    <input type="text" id="wSol" placeholder="Solana Wallet Address" class="form-group">
+                    <input type="text" id="wSui" placeholder="SUI / PEPE Wallet Address" class="form-group">
+                </div>
+
+                <button class="btn-act" style="background:var(--purple); color:#fff; width:100%" onclick="finalSubmitWithdraw()">Confirm Payout</button>
+            </div>
+            <button onclick="closeModals()" style="background:none; border:none; color:var(--muted); width:100%; margin-top:15px; cursor:pointer;">Close</button>
+        </div>
+    </div>
+
+    <!-- MODAL: CRYPTO CHOICE -->
+    <div id="crypModal" class="modal">
+        <div class="modal-content">
+            <h3>Choose Crypto to Mine</h3>
+            <button class="method-btn" onclick="startMiningNow('BTC')">
+                <span>Bitcoin (BTC)</span><span>₿</span>
+            </button>
+            <button class="method-btn" onclick="startMiningNow('SOL')">
+                <span>Solana (SOL)</span><span>☀️</span>
+            </button>
+            <button class="method-btn" onclick="startMiningNow('SUI')">
+                <span>Sui (SUI)</span><span>💧</span>
+            </button>
+            <button class="method-btn" onclick="startMiningNow('PEPE')">
+                <span>PEPE (PEPE)</span><span>🐸</span>
+            </button>
+            <button onclick="closeModals()" style="background:none; border:none; color:var(--muted); width:100%; margin-top:15px; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- FIXED BOTTOM ACTION BAR -->
+    <div class="action-bar">
+        <button class="btn-act" onclick="switchView('dashboardView')">🏠 Home</button>
+        <button class="btn-act" style="background:var(--purple); color:#fff;" onclick="openDepModal()">⬆️ Deposit</button>
+        <button class="btn-act" onclick="openWith()">⬇️ Withdraw</button>
+        <button class="btn-act" onclick="switchView('historyView')">📜 Activity</button>
+    </div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, update, push, get, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAiVujpar4bp-eCGZTEaCu6VKwhsJG7J3I",
+        authDomain: "f2mines1.firebaseapp.com",
+        databaseURL: "https://f2mines1-default-rtdb.firebaseio.com",
+        projectId: "f2mines1",
+        storageBucket: "f2mines1.firebasestorage.app",
+        messagingSenderId: "546591819609",
+        appId: "1:546591819609:web:97e8009b59fc3cdf44ee48"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // --- CONSTANTS ---
+    const SEC_48H = 172800; 
+    const SEC_12H = 43200;  
+    const RING_CIRCUM = 565.48; 
+    const TARGET_COINS = { 'BTC': 0.12, 'SOL': 20, 'SUI': 100, 'PEPE': 100000000 };
+
+    // --- STATE ---
+    let currentUser = null;
+    let userData = null;
+    let allTxns = [];
+    let mInterval = null;
+    let sDepM = "", sDepP = "", sDepA = 0, sWithM = "";
+
+    // --- 1. UI HELPERS & NAVIGATION ---
+    window.switchView = (id) => {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+        const target = document.getElementById(id);
+        if(target) target.classList.add('active');
+        if (id === 'profileView' && userData) {
+            document.getElementById('profName').value = userData.name || '';
+            document.getElementById('profPhone').value = userData.phone || '';
+        }
+    };
+
+    window.copyRef = () => {
+        const input = document.getElementById("refLink");
+        input.select();
+        document.execCommand("copy");
+        alert("Referral Link Copied!");
+    };
+
+    window.closeModals = () => {
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    };
+
+    // --- 2. DEPOSIT SYSTEM (Admin WhatsApp & TID Verification) ---
+    window.openDepModal = () => {
+        document.getElementById('depModal').style.display = 'flex';
+        document.getElementById('depSelection').style.display = 'block';
+        document.getElementById('depPlanSelection').style.display = 'none';
+        document.getElementById('depFinalForm').style.display = 'none';
+    };
+
+    window.openDepStep2 = (method) => {
+        sDepM = method;
+        document.getElementById('depSelection').style.display = 'none';
+        document.getElementById('depPlanSelection').style.display = 'block';
+    };
+
+    window.openDepForm = (method) => window.openDepStep2(method);
+
+    window.openDepFinal = async (plan, amt) => {
+        sDepP = plan; sDepA = amt;
+        document.getElementById('depPlanSelection').style.display = 'none';
+        document.getElementById('depFinalForm').style.display = 'block';
+        document.getElementById('inProof').value = "";
+        document.getElementById('inAmt').value = amt;
+        const binField = document.getElementById('inBinanceID');
+        if (binField) binField.style.display = (sDepM === 'Binance') ? 'block' : 'none';
+
+        try {
+            const settingsSnap = await get(ref(db, 'settings'));
+            const s = settingsSnap.val() || {};
+            let pre = (sDepM === 'JazzCash') ? 'jc' : 'ep';
+            let walletHtml = (sDepM === 'Binance') 
+                ? `<div style="text-align:left;"><b style="color:var(--accent);">Binance (USDT TRC20):</b><br><span style="word-break:break-all; font-size:12px;">${s.binance_addr || 'Address Not Set'}</span></div>`
+                : `<div style="text-align:left;"><b style="color:var(--accent);">${sDepM} Details:</b><br><span>Name: ${s[pre+'_name'] || 'Admin'}</span><br><span>Acc: ${s[pre+'_num'] || 'N/A'}</span></div>`;
+            walletHtml += `<div style="margin-top:15px; padding-top:10px; border-top:1px solid var(--border); text-align:left;"><b style="color:#25D366;">WhatsApp for Proof:</b><br><span>${s.wa_num || 'Not Set'}</span></div>`;
+            document.getElementById('adminBankDetails').innerHTML = walletHtml;
+        } catch (e) { console.error(e); }
+    };
+
+    window.submitDeposit = async () => {
+        const tid = document.getElementById('inProof').value.trim();
+        if (!tid) return alert("Please enter Transaction ID!");
+        try {
+            const txnSnap = await get(ref(db, 'transactions'));
+            const allT = txnSnap.val() || {};
+            if (Object.values(allT).some(t => t.proof && t.proof.toLowerCase() === tid.toLowerCase())) return alert("TID already used.");
+            
+            await push(ref(db, 'transactions'), {
+                uid: currentUser.uid, email: currentUser.email, type: 'Deposit', method: sDepM,
+                amount: parseFloat(document.getElementById('inAmt').value || sDepA), 
+                proof: tid, status: 'Pending', date: new Date().toLocaleString()
+            });
+            alert("Deposit submitted!"); closeModals();
+        } catch (e) { alert("Error submitting deposit."); }
+    };
+
+    window.sendWhatsAppProof = async () => {
+        const tid = document.getElementById('inProof').value;
+        const amt = document.getElementById('inAmt').value;
+        const sSnap = await get(ref(db, 'settings'));
+        const s = sSnap.val() || {};
+        if(!s.wa_num) return alert("WhatsApp not set.");
+        const msg = `*DEPOSIT PROOF*%0APlan: ${sDepP}%0AAmount: $${amt}%0ATID: ${tid}%0AEmail: ${currentUser.email}`;
+        window.open(`https://wa.me/${s.wa_num}?text=${msg}`, '_blank');
+    };
+
+    // --- 3. WITHDRAW SYSTEM ---
+    window.openWith = () => {
+        document.getElementById('withModal').style.display = 'flex';
+        document.getElementById('withSelection').style.display = 'block';
+        document.getElementById('withFinalForm').style.display = 'none';
+    };
+
+    window.openWithForm = (method) => {
+        sWithM = method;
+        document.getElementById('withSelection').style.display = 'none';
+        document.getElementById('withFinalForm').style.display = 'block';
+        document.getElementById('binanceWithGroup').style.display = (method === 'Binance') ? 'block' : 'none';
+        document.getElementById('localWithGroup').style.display = (method !== 'Binance') ? 'block' : 'none';
+    };
+
+    window.finalSubmitWithdraw = async () => {
+        const amt = parseFloat(document.getElementById('wAmt').value);
+        if (!amt || amt > (userData.balance || 0)) return alert("Invalid amount or insufficient balance.");
+        let details = (sWithM === 'Binance') ? document.getElementById('wBinID').value : document.getElementById('wLocalID').value;
+        if (!details) return alert("Enter account details.");
+        
+        await push(ref(db, 'transactions'), {
+            uid: currentUser.uid, email: currentUser.email, type: 'Withdrawal', method: sWithM,
+            amount: amt, currency: document.getElementById('wCurr').value, details: details,
+            status: 'Pending', date: new Date().toLocaleString()
+        });
+        alert("Withdrawal sent!"); closeModals();
+    };
+
+    // --- 4. MINING ENGINE (Cycle Logic) ---
+    window.handleMiningAction = () => {
+        const dep = allTxns.some(t => t.uid === currentUser.uid && t.type === 'Deposit' && t.status === 'Approved');
+        if (!dep) return alert("Requires an approved deposit to start mining.");
+        if (userData.miningState?.active) {
+            if(confirm("Pause Mining?")) terminateMining("Mining Paused.");
+        } else {
+            if (userData.miningState?.totalSec > 0 && userData.miningState.totalSec < SEC_48H) {
+                update(ref(db, `users/${currentUser.uid}/miningState`), { active: true, lastActiveAt: Date.now() });
+            } else { document.getElementById('crypModal').style.display = 'flex'; }
+        }
+    };
+
+    window.startMiningNow = (coin) => {
+        update(ref(db, `users/${currentUser.uid}/miningState`), { active: true, coin: coin, totalSec: 0, lastActiveAt: Date.now() })
+        .then(() => { closeModals(); startMiningEngine(); });
+    };
+
+    function startMiningEngine() {
+        if (mInterval) clearInterval(mInterval);
+        mInterval = setInterval(() => {
+            if (!userData?.miningState?.active) return clearInterval(mInterval);
+            const now = Date.now();
+            const elapsed = Math.floor((now - userData.miningState.lastActiveAt) / 1000);
+            if (elapsed >= SEC_12H) return terminateMining("12h Session reached.");
+            const total = (userData.miningState.totalSec || 0) + elapsed;
+            if (total >= SEC_48H) return terminateMining("Cycle Complete!");
+            renderVisuals({ ...userData.miningState, calculatedTotal: total });
+        }, 1000);
+    }
+
+    async function terminateMining(msg) {
+        if (mInterval) clearInterval(mInterval);
+        const elapsed = Math.min(Math.floor((Date.now() - userData.miningState.lastActiveAt) / 1000), SEC_12H);
+        const finalTotal = (userData.miningState.totalSec || 0) + elapsed;
+        if (finalTotal >= SEC_48H) {
+            const earnings = (userData.hashrate || 1) * 2.5;
+            await push(ref(db, 'transactions'), {
+                uid: currentUser.uid, email: currentUser.email, type: 'Mining Profit',
+                method: userData.miningState.coin, amount: parseFloat(earnings.toFixed(2)),
+                status: 'Pending', date: new Date().toLocaleString()
+            });
+            await update(ref(db, `users/${currentUser.uid}/miningState`), { active: false, totalSec: 0, lastActiveAt: 0 });
+            alert("Cycle finished! Profit sent for approval.");
+        } else {
+            await update(ref(db, `users/${currentUser.uid}/miningState`), { active: false, totalSec: finalTotal, lastActiveAt: 0 });
+            if (msg) alert(msg);
+        }
+    }
+
+    function renderVisuals(m) {
+        if (!m) return;
+        const currentTotal = (m.active && m.calculatedTotal !== undefined) ? m.calculatedTotal : (m.totalSec || 0);
+        let progress = Math.min(currentTotal / SEC_48H, 1);
+        const ring = document.querySelector('.progress-ring__circle');
+        if (ring) ring.style.strokeDashoffset = RING_CIRCUM - (progress * RING_CIRCUM);
+        if (document.getElementById('percLabel')) document.getElementById('percLabel').innerText = Math.floor(progress * 100) + "%";
+        const h = Math.floor(currentTotal / 3600).toString().padStart(2, '0');
+        const min = Math.floor((currentTotal % 3600) / 60).toString().padStart(2, '0');
+        const s = (currentTotal % 60).toString().padStart(2, '0');
+        if (document.getElementById('timerText')) document.getElementById('timerText').innerText = `${h}:${min}:${s}`;
+        const label = document.getElementById('miningRatioLabel');
+        if (label) {
+            if (m.active) {
+                const earned = (currentTotal / SEC_48H) * (TARGET_COINS[m.coin] || 0);
+                label.innerHTML = `MINING ${m.coin}<br>${userData?.hashrate || 0} TH/s<br>${earned.toFixed(8)}`;
+            } else label.innerHTML = `START<br>MINING`;
+        }
+    }
+
+    // --- 5. DATA SYNC & REFERRALS ---
+    function updateDashboardUI() {
+        if (!userData) return;
+        document.getElementById('dispBal').innerText = "$" + (userData.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('dispHash').innerText = `Hashrate: ${userData.hashrate || 0} TH/s`;
+        document.getElementById('navAvatar').innerText = userData.name?.substring(0, 2).toUpperCase() || "US";
+
+        const m = userData.miningState || { active: false, totalSec: 0, coin: 'BTC' };
+        document.getElementById('statLabel').innerText = m.active ? "ACTIVE" : "INACTIVE";
+        document.getElementById('statLabel').style.color = m.active ? "var(--success)" : "var(--muted)";
+        document.getElementById('timerContainer').style.display = m.active ? 'block' : 'none';
+        if (!m.active) renderVisuals(m);
+
+        const base = window.location.origin + window.location.pathname.replace('dashboard.html', 'signup.html');
+        document.getElementById('refLink').value = base + "?ref=" + (userData.referralCode || "");
+        renderHistory();
+        window.loadReferralList(currentUser.uid);
+    }
+
+    window.loadReferralList = (uid) => {
+        if (!uid) return;
+        onValue(ref(db, `referrals/${uid}`), (snap) => {
+            const container = document.getElementById('friendsListContainer');
+            const friends = snap.val();
+            if (!friends) {
+                container.innerHTML = '<p style="font-size:11px; color:var(--muted); text-align:center; padding:10px;">No friends invited yet.</p>';
+                if(document.getElementById('refCount')) document.getElementById('refCount').innerText = "0";
+                return;
+            }
+            container.innerHTML = Object.values(friends).map(f => `
+                <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border:1px solid ${f.status === 'Completed' ? 'var(--success)' : 'var(--border)'}">
+                    <div style="text-align:left;"><b style="font-size:12px;">${f.friendName}</b><br><small style="color:var(--muted); font-size:10px;">${f.joinDate}</small></div>
+                    <div style="text-align:right;"><div style="color:${f.status === 'Completed' ? 'var(--success)' : 'var(--warning)'}; font-weight:900; font-size:12px;">+$${f.rewardEarned}</div><span style="font-size:9px;">${f.status}</span></div>
+                </div>
+            `).reverse().join('');
+            if(document.getElementById('refCount')) document.getElementById('refCount').innerText = Object.keys(friends).length;
+        });
+    };
+
+    function renderHistory() {
+        const myTxns = allTxns.filter(t => t.uid === currentUser.uid).reverse();
+        document.getElementById('txnList').innerHTML = myTxns.map(t => {
+            let color = (t.type === 'Withdrawal') ? "var(--danger)" : (t.type === 'Mining Profit' ? "var(--purple-glow)" : "var(--success)");
+            return `<div class="item-card"><div><b>${t.type}</b><br><small>${t.date}</small></div><div style="text-align:right"><div style="font-weight:900; color:${color}">$${t.amount}</div><small>${t.status}</small></div></div>`;
+        }).join('') || '<p style="text-align:center; padding:20px; font-size:12px;">No activity yet.</p>';
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            onValue(ref(db, `users/${user.uid}`), (snap) => {
+                userData = snap.val();
+                if (!userData) { signOut(auth).then(() => { window.location.href = 'index.html'; }); return; }
+                if (userData?.miningState?.active) startMiningEngine();
+                updateDashboardUI();
+            });
+            onValue(ref(db, 'transactions'), (snap) => {
+                allTxns = snap.val() ? Object.entries(snap.val()).map(([key, val]) => ({...val, firebaseKey: key})) : [];
+                renderHistory();
+            });
+            onValue(ref(db, 'settings/referral'), (snap) => {
+                const rs = snap.val();
+                if (document.getElementById('refRulesText')) document.getElementById('refRulesText').innerText = (rs?.enabled == true || rs?.enabled == "true") ? `🎁 Reward: $${rs.bonusAmount} + ${rs.miningBoost} TH/s per invite!` : "Program Inactive";
+            });
+            setInterval(simulateMarket, 5000);
+        } else window.location.href = 'login.html';
+    });
+
+    window.saveProfile = () => {
+        update(ref(db, `users/${currentUser.uid}`), { name: document.getElementById('profName').value, phone: document.getElementById('profPhone').value }).then(() => { alert("Saved!"); switchView('dashboardView'); });
+    };
+    window.logout = () => signOut(auth).then(() => window.location.href = 'index.html');
+    function simulateMarket() {
+        document.querySelectorAll('.m-row span:last-child').forEach(r => {
+            const current = parseFloat(r.innerText.replace('$', '').replace(',', ''));
+            const change = (Math.random() * 2 - 1) * (current * 0.002);
+            r.innerText = '$' + (current + change).toLocaleString(undefined, {minimumFractionDigits: 2});
+            r.style.color = change > 0 ? "var(--success)" : "var(--danger)";
+        });
+    }
+    const tBtn = document.getElementById('themeToggle');
+    if(tBtn) tBtn.onclick = () => { document.body.classList.toggle('light-mode'); localStorage.setItem('f2_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); };
+    if (localStorage.getItem('f2_theme') === 'light') document.body.classList.add('light-mode');
+</script>
+</body>
+</html>
